@@ -44,7 +44,8 @@ lib/                     Shared logic, pure and tested where possible.
   hooks/                 useHydrated, useToday, useCountdown, useReloadOnNewDay.
 games/                   One folder per game plus the registry.
   index.ts               `games` array: add new configs here, in hub order.
-  melody/                config.ts, logic.ts (+ logic.test.ts), store.ts, audio.ts, components/.
+  melody/                config.ts, logic.ts (+ logic.test.ts), store.ts (+ store.test.ts), audio.ts, components/.
+  colourmix/             Same layout: config.ts, logic.ts, store.ts, components/ (sliders, swatches, game).
 ```
 
 ## Rules every game follows

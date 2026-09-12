@@ -30,6 +30,20 @@ describe("buildShareText", () => {
     expect(text).not.toContain("#");
   });
 
+  it("inserts an optional detail between the heading and the tries", () => {
+    const text = buildShareText({
+      gameName: "Colour Mix",
+      puzzleNumber: 3,
+      won: true,
+      tries: 2,
+      maxTries: 3,
+      detail: "96%",
+      rows: ["▲▼✓", "✓✓✓"],
+      url: "https://example.com",
+    });
+    expect(text).toBe("Colour Mix #3  96%  2/3\n▲▼✓\n✓✓✓\nhttps://example.com");
+  });
+
   it("uses X for a loss", () => {
     const text = buildShareText({
       gameName: "Melody",

@@ -7,6 +7,7 @@ Games so far:
 | Game | What it is |
 | --- | --- |
 | 🎹 Melody | Hear five notes, then play them back on a piano in six tries. |
+| 🎨 Colour Mix | Mix red, green and blue with sliders to match a target colour in three tries. |
 
 Every game has one daily puzzle (same for everyone, with stats and streaks) plus a practice mode with unlimited random puzzles that do not count towards stats.
 

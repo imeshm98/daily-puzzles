@@ -16,6 +16,8 @@ export interface ShareTextInput {
   /** Tries used (1-based). Ignored for a loss, which shows "X". */
   tries: number;
   maxTries: number;
+  /** Optional extra between the heading and the tries, e.g. "96%" → "Colour Mix #3  96%  2/3". */
+  detail?: string;
   /** One line per try. Emoji squares only: never include the answer. */
   rows: readonly string[];
   /** Defaults to SITE_URL. */
@@ -36,7 +38,7 @@ export function buildShareText(input: ShareTextInput): string {
     ? `${input.gameName} Practice`
     : `${input.gameName} #${input.puzzleNumber}`;
   return [
-    `${heading}  ${score}`,
+    [heading, input.detail, score].filter(Boolean).join("  "),
     ...input.rows,
     input.url ?? SITE_URL,
   ].join("\n");

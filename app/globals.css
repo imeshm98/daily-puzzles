@@ -154,3 +154,51 @@
 .animate-pop {
   animation: pop 120ms ease-out;
 }
+
+/* Colour Mix sliders: a big thumb and a tall hit area so they are easy to use with a thumb. */
+.colour-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 2.75rem;
+  background: transparent;
+  cursor: pointer;
+  touch-action: pan-y;
+}
+.colour-slider::-webkit-slider-runnable-track {
+  height: 0.5rem;
+  border-radius: 9999px;
+  background: color-mix(in oklab, var(--slider-colour) 40%, var(--muted));
+}
+.colour-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 2rem;
+  height: 2rem;
+  margin-top: -0.75rem;
+  border-radius: 9999px;
+  background: var(--slider-colour);
+  border: 3px solid white;
+  box-shadow: 0 1px 4px rgb(0 0 0 / 0.5);
+}
+.colour-slider::-moz-range-track {
+  height: 0.5rem;
+  border-radius: 9999px;
+  background: color-mix(in oklab, var(--slider-colour) 40%, var(--muted));
+}
+.colour-slider::-moz-range-thumb {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 9999px;
+  background: var(--slider-colour);
+  border: 3px solid white;
+  box-shadow: 0 1px 4px rgb(0 0 0 / 0.5);
+}
+.colour-slider:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+  border-radius: 9999px;
+}
+.colour-slider:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
