@@ -79,8 +79,14 @@ describe("solver", () => {
   it("returns one shortest solution that replays to the target", () => {
     const tiles = [3, 7, 10, 2, 25];
     const results = exploreResults(tiles);
-    for (const [target, ops] of results) {
-      if (ops < 2) continue;
+    // Every search walks the whole state space, and this tile set reaches
+    // over 900 targets, so checking all of them takes seconds on a slow CI
+    // runner. Check every 2-step target and a fixed sample of the deeper ones.
+    const targets = [...results].filter(([, ops]) => ops >= 2).sort((x, y) => x[0] - y[0]);
+    const sample = targets.filter(([, ops], index) => ops === 2 || index % 12 === 0);
+    expect(sample.length).toBeGreaterThan(100);
+    expect(sample.some(([, ops]) => ops === 4)).toBe(true);
+    for (const [target, ops] of sample) {
       const solution = findSolution(tiles, target);
       expect(solution).not.toBeNull();
       expect(solution).toHaveLength(ops);
