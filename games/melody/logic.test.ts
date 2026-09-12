@@ -167,14 +167,17 @@ describe("buildMelodyShareText", () => {
       won: true,
       marks: [marks("gybbg"), marks("bggyg"), marks("ggggg")],
     });
-    expect(text).toBe(`Melody #1  3/6\n🟩🟨⬛⬛🟩\n⬛🟩🟩🟨🟩\n🟩🟩🟩🟩🟩\n${SITE_URL}`);
+    expect(text).toBe(
+      `Melody #1  3/6\n🟩🟨⬛⬛🟩\n⬛🟩🟩🟨🟩\n🟩🟩🟩🟩🟩\nCan you beat 3 tries?\n${SITE_URL}/games/melody/?s=share`,
+    );
   });
 
   it("shows X for a loss and never includes note names", () => {
     const rows = Array.from({ length: 6 }, () => marks("bybyb"));
     const text = buildMelodyShareText({ puzzleNumber: 42, won: false, marks: rows });
     expect(text.startsWith("Melody #42  X/6\n")).toBe(true);
-    expect(text.split("\n")).toHaveLength(8);
+    expect(text.split("\n")).toHaveLength(9);
+    expect(text.split("\n")[7]).toBe("I failed today. Your turn.");
     expect(text).not.toMatch(/[A-G][45]/);
   });
 });

@@ -1,6 +1,8 @@
 import type { GameConfig } from "@/lib/game-config";
 import {
   buildNumbersShareText,
+  numbersHook,
+  NUMBERS_PATH,
   generateRandomPuzzle,
   MAX_STEPS,
   NUMBERS_NAME,
@@ -13,7 +15,7 @@ export const numbersConfig: GameConfig<NumbersShareInput, NumbersPuzzle> = {
   name: NUMBERS_NAME,
   emoji: "🔢",
   tagline: "Combine five numbers to hit the target.",
-  path: "/games/numbers",
+  path: NUMBERS_PATH,
   maxTries: MAX_STEPS,
   distributionLabel: "Steps to solve",
   howToPlay: {
@@ -26,5 +28,6 @@ export const numbersConfig: GameConfig<NumbersShareInput, NumbersPuzzle> = {
     ],
   },
   buildShareText: buildNumbersShareText,
+  buildHook: numbersHook,
   generateRandomPuzzle,
 };

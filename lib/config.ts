@@ -8,10 +8,10 @@ export const SITE_NAME = "Daily Puzzles";
 export const SITE_TAGLINE = "A new little puzzle every day.";
 
 /**
- * Public URL of the site. It is appended to every share text.
- * Change it here once when you have a domain.
+ * Public URL of the site, without a trailing slash. Share links are built
+ * from it (see lib/share.ts). Change it here once when you move domains.
  */
-export const SITE_URL = "https://example.com";
+export const SITE_URL = "https://daily-puzzles-4gm.pages.dev";
 
 /** Puzzle #1 is this local calendar date; each following day adds one. */
 export const EPOCH_DATE = { year: 2026, month: 9, day: 14 } as const;

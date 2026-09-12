@@ -166,7 +166,9 @@ describe("buildColourMixShareText", () => {
       hints,
       winningTry: 2,
     });
-    expect(text).toBe(`Colour Mix #3  96%  2/3\n▲▼✓\n✓✓✓\n${SITE_URL}`);
+    expect(text).toBe(
+      `Colour Mix #3  96%  2/3\n▲▼✓\n✓✓✓\n96% match. Can you get closer?\n${SITE_URL}/games/colourmix/?s=share`,
+    );
   });
 
   it("shows X on a loss and the practice heading in practice", () => {

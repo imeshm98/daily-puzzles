@@ -6,6 +6,7 @@ import { createRng, pickOne, type Rng } from "@/lib/random";
 import { buildShareText, SQUARES } from "@/lib/share";
 
 export const MELODY_NAME = "Melody";
+export const MELODY_PATH = "/games/melody";
 export const MELODY_LENGTH = 5;
 export const MAX_TRIES = 6;
 
@@ -164,6 +165,15 @@ export interface MelodyShareInput {
   marks: readonly (readonly Mark[])[];
 }
 
+/** Share hook (daily only): a challenge for the friend, under 40 characters, varied by result. */
+export function melodyHook(input: Pick<MelodyShareInput, "won" | "marks">): string {
+  if (!input.won) return "I failed today. Your turn.";
+  const tries = input.marks.length;
+  if (tries <= 2) return `Bet you can't do it in ${tries}.`;
+  if (tries <= 4) return `Can you beat ${tries} tries?`;
+  return "Harder than it sounds. Try it.";
+}
+
 export function buildMelodyShareText(input: MelodyShareInput): string {
   return buildShareText({
     gameName: MELODY_NAME,
@@ -173,5 +183,7 @@ export function buildMelodyShareText(input: MelodyShareInput): string {
     tries: input.marks.length,
     maxTries: MAX_TRIES,
     rows: input.marks.map(marksToSquares),
+    hook: melodyHook(input),
+    path: MELODY_PATH,
   });
 }

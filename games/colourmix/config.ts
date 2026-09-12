@@ -1,6 +1,8 @@
 import type { GameConfig } from "@/lib/game-config";
 import {
   buildColourMixShareText,
+  colourMixHook,
+  COLOUR_MIX_PATH,
   COLOUR_MIX_NAME,
   generateRandomColour,
   MAX_TRIES,
@@ -13,7 +15,7 @@ export const colourMixConfig: GameConfig<ColourMixShareInput, RGB> = {
   name: COLOUR_MIX_NAME,
   emoji: "🎨",
   tagline: "Mix red, green and blue to match the colour.",
-  path: "/games/colourmix",
+  path: COLOUR_MIX_PATH,
   maxTries: MAX_TRIES,
   howToPlay: {
     intro: ["Every day there is a target colour. Recreate it by mixing red, green and blue."],
@@ -30,5 +32,6 @@ export const colourMixConfig: GameConfig<ColourMixShareInput, RGB> = {
     ],
   },
   buildShareText: buildColourMixShareText,
+  buildHook: colourMixHook,
   generateRandomPuzzle: generateRandomColour,
 };

@@ -5,6 +5,7 @@ import { createRng, randomInt, type Rng } from "@/lib/random";
 import { buildShareText } from "@/lib/share";
 
 export const COLOUR_MIX_NAME = "Colour Mix";
+export const COLOUR_MIX_PATH = "/games/colourmix";
 export const MAX_TRIES = 3;
 /** A try scoring at least this is a win. */
 export const WIN_SCORE = 95;
@@ -129,6 +130,15 @@ export interface ColourMixShareInput {
   winningTry?: number;
 }
 
+/** Share hook (daily only): a challenge for the friend, under 40 characters, varied by result. */
+export function colourMixHook(input: Pick<ColourMixShareInput, "won" | "bestScore">): string {
+  const score = input.bestScore;
+  if (input.won) {
+    return score >= 98 ? `Beat ${score}% if you can.` : `${score}% match. Can you get closer?`;
+  }
+  return score >= 85 ? `Only ${score}%. Show me how it's done.` : "My eyes failed me. Try yours.";
+}
+
 export function buildColourMixShareText(input: ColourMixShareInput): string {
   return buildShareText({
     gameName: COLOUR_MIX_NAME,
@@ -139,5 +149,7 @@ export function buildColourMixShareText(input: ColourMixShareInput): string {
     maxTries: MAX_TRIES,
     detail: `${input.bestScore}%`,
     rows: input.hints.map(hintsToSymbols),
+    hook: colourMixHook(input),
+    path: COLOUR_MIX_PATH,
   });
 }

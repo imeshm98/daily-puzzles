@@ -1,6 +1,8 @@
 import type { GameConfig } from "@/lib/game-config";
 import {
   buildDistanceShareText,
+  distanceHook,
+  DISTANCE_PATH,
   DISTANCE_NAME,
   generateRandomPuzzle,
   ROUNDS,
@@ -13,7 +15,7 @@ export const distanceConfig: GameConfig<DistanceShareInput, DistancePuzzle> = {
   name: DISTANCE_NAME,
   emoji: "🌍",
   tagline: "Guess how far apart two cities are.",
-  path: "/games/distance",
+  path: DISTANCE_PATH,
   maxTries: ROUNDS,
   distributionLabel: "Score, in hundreds",
   howToPlay: {
@@ -31,5 +33,6 @@ export const distanceConfig: GameConfig<DistanceShareInput, DistancePuzzle> = {
     ],
   },
   buildShareText: buildDistanceShareText,
+  buildHook: distanceHook,
   generateRandomPuzzle,
 };

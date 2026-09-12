@@ -46,7 +46,7 @@ This produces a fully static site in `out/` (Next.js `output: "export"`). You ca
 npx serve out
 ```
 
-Before going live, set your real domain in `lib/config.ts` (`SITE_URL`). It is appended to every share text.
+Share links are built from `SITE_URL` in `lib/config.ts`: each result links to its own game page with `?s=share`, so analytics can count visits that came from shares. Change `SITE_URL` once when you move domains.
 
 Note for Windows: when `out/` is built on Windows, Next.js 16.3 writes the per-segment prefetch files with the wrong name (a known exporter bug with backslashes), so a local preview logs one harmless 404 per link prefetch. Builds on Vercel and Cloudflare Pages run on Linux and are not affected.
 
@@ -91,7 +91,7 @@ See `CLAUDE.md` for the rules every game follows.
 ## Add a new game
 
 1. Create `games/<id>/logic.ts` with the pure rules and a daily generator that uses `createRng(`<id>:${dateKey}`)` from `lib/random.ts`. Add `logic.test.ts`.
-2. Create `games/<id>/config.ts` exporting a `GameConfig`: `id`, `name`, `emoji`, `tagline`, `path`, `maxTries`, `howToPlay`, `buildShareText`. Add `generateRandomPuzzle` to get practice mode (unlimited random puzzles that never touch stats) for free.
+2. Create `games/<id>/config.ts` exporting a `GameConfig`: `id`, `name`, `emoji`, `tagline`, `path`, `maxTries`, `howToPlay`, `buildShareText`, `buildHook` (the one-line challenge under the share grid, varied by result). Add `generateRandomPuzzle` to get practice mode (unlimited random puzzles that never touch stats) for free.
 3. Create `games/<id>/store.ts` (Zustand) that loads today's progress with `loadDailyState`, saves it with `saveDailyState` in daily mode, and can load a practice puzzle without saving.
 4. Create the game's client component in `games/<id>/components/`, wrapped in `<GameShell>` and ending with `<ResultDialog>`.
 5. Add `app/games/<id>/page.tsx` that renders it.

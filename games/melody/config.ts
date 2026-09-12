@@ -1,6 +1,8 @@
 import type { GameConfig } from "@/lib/game-config";
 import {
   buildMelodyShareText,
+  melodyHook,
+  MELODY_PATH,
   generateRandomMelody,
   MAX_TRIES,
   MELODY_NAME,
@@ -13,7 +15,7 @@ export const melodyConfig: GameConfig<MelodyShareInput, Note[]> = {
   name: MELODY_NAME,
   emoji: "🎹",
   tagline: "Hear five notes, then play them back.",
-  path: "/games/melody",
+  path: MELODY_PATH,
   maxTries: MAX_TRIES,
   howToPlay: {
     intro: [
@@ -32,5 +34,6 @@ export const melodyConfig: GameConfig<MelodyShareInput, Note[]> = {
     ],
   },
   buildShareText: buildMelodyShareText,
+  buildHook: melodyHook,
   generateRandomPuzzle: generateRandomMelody,
 };

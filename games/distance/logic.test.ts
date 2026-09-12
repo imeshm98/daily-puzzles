@@ -179,7 +179,9 @@ describe("buildDistanceShareText", () => {
     const results = [result(3), result(5), result(14), result(5), result(35.6)];
     expect(totalPoints(results)).toBe(412);
     const text = buildDistanceShareText({ puzzleNumber: 4, results });
-    expect(text).toBe(`Distance #4  412/500\n🟩🟩🟨🟩🟥\n${SITE_URL}`);
+    expect(text).toBe(
+      `Distance #4  412/500\n🟩🟩🟨🟩🟥\n412/500. How good is your geography?\n${SITE_URL}/games/distance/?s=share`,
+    );
   });
 
   it("uses the practice heading in practice", () => {

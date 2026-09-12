@@ -1,6 +1,8 @@
 import type { GameConfig } from "@/lib/game-config";
 import {
   buildOrderShareText,
+  orderHook,
+  ORDER_PATH,
   generateRandomPuzzle,
   MAX_TRIES,
   ORDER_NAME,
@@ -13,7 +15,7 @@ export const orderConfig: GameConfig<OrderShareInput, OrderPuzzle> = {
   name: ORDER_NAME,
   emoji: "📊",
   tagline: "Sort five things from smallest to largest.",
-  path: "/games/order",
+  path: ORDER_PATH,
   maxTries: MAX_TRIES,
   howToPlay: {
     intro: ["Every day there are five things to put in order: animals by weight, rivers by length, and so on."],
@@ -28,5 +30,6 @@ export const orderConfig: GameConfig<OrderShareInput, OrderPuzzle> = {
     ],
   },
   buildShareText: buildOrderShareText,
+  buildHook: orderHook,
   generateRandomPuzzle,
 };

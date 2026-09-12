@@ -38,7 +38,7 @@ lib/                     Shared logic, pure and tested where possible.
   random.ts              hashString, mulberry32, createRng(seed), randomInt, pickOne, shuffle.
   stats.ts               GameStats, recordResult (streak rules), load/save. stats-store.ts wraps it in Zustand.
   daily-state.ts         Save/load a game's progress for today (must include dateKey, puzzleNumber, status).
-  share.ts               buildShareText, shareResult (native share on mobile, clipboard elsewhere), SQUARES.
+  share.ts               buildShareText, buildShareUrl (?s=share), buildWhatsAppUrl, shareResult, SQUARES, MAX_HOOK_LENGTH.
   storage.ts             Safe localStorage JSON helpers and namespaced keys.
   game-config.ts         The GameConfig type every game registers.
   hooks/                 useHydrated, useToday, useCountdown, useReloadOnNewDay.
@@ -59,7 +59,8 @@ games/                   One folder per game plus the registry.
 3. Wrap the page in `<GameShell game={config}>`. Use `useGameShell()` for `stats`, `record(result)` and `dialogOpen` (ignore keyboard input while it is true). Pass `helpExtra` to render extra content at the bottom of the how-to-play dialog (Melody puts its volume slider and Test sound button there).
 4. Persist today's progress with `loadDailyState` / `saveDailyState` from `lib/daily-state.ts`, keyed by the game id. Recompute derived data from the saved input rather than trusting it.
 5. When the game ends, call `record({ puzzleNumber, won, tries })` once and show `<ResultDialog>` with the share text.
-6. Share text comes from `buildShareText` in `lib/share.ts`: emoji squares and numbers only, never the answer, ending with `SITE_URL`.
+6. Share text comes from `buildShareText` in `lib/share.ts`: heading, emoji rows (never the answer), one hook line from the config's `buildHook` (a challenge for the friend, under 40 characters, varied by result), then the game page link with `?s=share` (from `buildShareUrl`). Practice shares are plainer: no puzzle number, no hook. `ResultDialog` shows Share and "Challenge on WhatsApp" (`buildWhatsAppUrl`). Lines use `
+` only.
 7. Client-only data (localStorage, the clock, audio) must not affect server-rendered HTML. Stores start empty and hydrate from an effect that calls a store action. Never call a `useState` setter synchronously inside `useEffect` (the react-hooks lint rules forbid it); prefer `useSyncExternalStore` or a Zustand action.
 8. Mobile first, dark theme, large touch targets, keyboard support on desktop.
 9. A game's `id` is its URL slug and its localStorage namespace. Never rename it after launch.
@@ -69,7 +70,7 @@ games/                   One folder per game plus the registry.
 ## Adding a new game
 
 1. Create `games/<id>/logic.ts` with pure rule functions and a `getDaily<Name>(dateKey)` generator, plus `logic.test.ts`.
-2. Create `games/<id>/config.ts` exporting a `GameConfig` (id, name, emoji, tagline, path, maxTries, howToPlay, buildShareText, and `generateRandomPuzzle` for practice mode).
+2. Create `games/<id>/config.ts` exporting a `GameConfig` (id, name, emoji, tagline, path, maxTries, howToPlay, buildShareText, buildHook, and `generateRandomPuzzle` for practice mode). Add the new hook's result branches to `games/hooks.test.ts`.
 3. Create `games/<id>/store.ts` (Zustand) with an `init()` that loads today's puzzle and saved progress, a `startPractice(puzzle)` that loads a practice puzzle without saving, and actions that save with `saveDailyState` in daily mode only.
 4. Create `games/<id>/components/<name>-game.tsx`, a client component that renders `<GameShell>` and `<ResultDialog>`.
 5. Create `app/games/<id>/page.tsx` that exports `metadata` and renders the game component.
