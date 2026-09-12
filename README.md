@@ -71,21 +71,10 @@ Or with Wrangler after a local build: `npx wrangler pages deploy out`.
 
 Any other static host works too: upload the contents of `out/`.
 
-## GitHub Actions
+## Continuous integration and deployment
 
-Two workflows live in `.github/workflows/`. Both use the Node version in `.nvmrc` and cache npm.
-
-- **ci.yml** runs on every pull request and on every push to a branch other than `main`. It runs `npm ci`, then `npm run lint`, `npm test` and `npm run build`, so a branch cannot be merged with a broken lint, test or build.
-- **deploy.yml** runs on every push to `main`. It repeats the same install, lint, test and build steps, then publishes the `out/` folder to Cloudflare Pages with `cloudflare/wrangler-action` (`wrangler pages deploy out --project-name=daily-puzzles`). A concurrency group makes sure only one deploy runs at a time; a newer push waits for the running deploy to finish.
-
-The deploy workflow needs two repository secrets (**Settings → Secrets and variables → Actions**):
-
-| Secret | Value |
-| --- | --- |
-| `CLOUDFLARE_API_TOKEN` | An API token with the **Cloudflare Pages: Edit** permission. |
-| `CLOUDFLARE_ACCOUNT_ID` | Your Cloudflare account ID (shown on the Workers & Pages overview page). |
-
-The Cloudflare Pages project must be called `daily-puzzles`. Create it once with `npx wrangler pages project create daily-puzzles` or in the dashboard, and do not connect it to Git there, since GitHub Actions does the building and uploading.
+- **Cloudflare Pages** is connected to the GitHub repository and builds and deploys the site from the `main` branch automatically on every push (see the Cloudflare Pages steps above for the build settings).
+- **GitHub Actions** runs checks only. The workflow in `.github/workflows/ci.yml` runs on every push to every branch and on every pull request: it uses the Node version in `.nvmrc` with npm caching, then runs `npm ci`, `npm run lint`, `npm test` and `npm run build`. It does not deploy anything.
 
 ## Project structure
 
