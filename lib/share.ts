@@ -10,6 +10,8 @@ export const SQUARES = {
 export interface ShareTextInput {
   gameName: string;
   puzzleNumber: number;
+  /** Practice puzzles show "<Game> Practice" instead of the puzzle number. */
+  practice?: boolean;
   won: boolean;
   /** Tries used (1-based). Ignored for a loss, which shows "X". */
   tries: number;
@@ -30,8 +32,11 @@ export interface ShareTextInput {
  */
 export function buildShareText(input: ShareTextInput): string {
   const score = input.won ? `${input.tries}/${input.maxTries}` : `X/${input.maxTries}`;
+  const heading = input.practice
+    ? `${input.gameName} Practice`
+    : `${input.gameName} #${input.puzzleNumber}`;
   return [
-    `${input.gameName} #${input.puzzleNumber}  ${score}`,
+    `${heading}  ${score}`,
     ...input.rows,
     input.url ?? SITE_URL,
   ].join("\n");

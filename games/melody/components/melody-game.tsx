@@ -1,6 +1,6 @@
 "use client";
 
-import { Delete, Play, Volume2 } from "lucide-react";
+import { ArrowRight, Delete, Play, Volume2 } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { GameShell, useGameShell } from "@/components/game-shell";
 import { ResultDialog } from "@/components/result-dialog";
@@ -24,7 +24,8 @@ export function MelodyGame() {
 }
 
 function MelodyPlay() {
-  const { stats, record, dialogOpen } = useGameShell();
+  const { stats, record, dialogOpen, mode, practice, hasPractice, startPractice, nextPractice } =
+    useGameShell<Note[]>();
 
   const hydrated = useMelodyStore((state) => state.hydrated);
   const status = useMelodyStore((state) => state.status);
@@ -34,6 +35,7 @@ function MelodyPlay() {
   const current = useMelodyStore((state) => state.current);
   const answer = useMelodyStore((state) => state.answer);
   const init = useMelodyStore((state) => state.init);
+  const startPracticeRound = useMelodyStore((state) => state.startPractice);
 
   const [playback, setPlayback] = useState<Playback | null>(null);
   const [flashNote, setFlashNote] = useState<Note | null>(null);
@@ -42,10 +44,13 @@ function MelodyPlay() {
   const sequenceRef = useRef<SequenceHandle | null>(null);
   const flashTimer = useRef(0);
 
+  // Load the daily puzzle, or the current practice round when the shell hands one over.
   useEffect(() => {
-    init();
-  }, [init]);
+    if (practice) startPracticeRound(practice.puzzle);
+    else init();
+  }, [practice, init, startPracticeRound]);
 
+  const isPractice = mode === "practice";
   const finished = status !== "playing";
   const won = status === "won";
   const showResult = resultOpen ?? (hydrated && finished);
@@ -112,6 +117,7 @@ function MelodyPlay() {
 
     setResultOpen(false);
     if (result.status !== "playing") {
+      // The shell ignores this in practice mode.
       record({
         puzzleNumber: state.puzzleNumber,
         won: result.status === "won",
@@ -130,6 +136,14 @@ function MelodyPlay() {
     await delay(500);
     setResultOpen(true);
   }, [play, record]);
+
+  /** "Keep playing (practice)" on the daily result, "Next puzzle" in practice. */
+  const handlePractice = useCallback(() => {
+    stopPlayback();
+    setResultOpen(false);
+    if (isPractice) nextPractice();
+    else startPractice();
+  }, [stopPlayback, isPractice, nextPractice, startPractice]);
 
   // Computer keyboard: A S D F G H J K = notes, Backspace = undo, Enter = submit.
   const keyboardLocked = dialogOpen || showResult;
@@ -171,6 +185,12 @@ function MelodyPlay() {
   const canSubmit = hydrated && !finished && current.length === MELODY_LENGTH;
   const playingMelody = playback?.kind === "melody";
 
+  const title = !hydrated
+    ? melodyConfig.name
+    : isPractice
+      ? `Practice #${practice?.round ?? 1}`
+      : `${melodyConfig.name} #${puzzleNumber}`;
+
   const progress = !hydrated
     ? ""
     : won
@@ -179,13 +199,18 @@ function MelodyPlay() {
         ? "Out of tries"
         : `Try ${guesses.length + 1} of ${MAX_TRIES}`;
 
-  const shareText = melodyConfig.buildShareText({ puzzleNumber, won, marks });
+  const shareText = melodyConfig.buildShareText({
+    puzzleNumber,
+    practice: isPractice,
+    won,
+    marks,
+  });
 
   return (
     <>
       <div className="flex flex-1 flex-col gap-4">
         <div className="flex items-center justify-between text-sm text-muted-foreground">
-          <span>{hydrated ? `${melodyConfig.name} #${puzzleNumber}` : melodyConfig.name}</span>
+          <span>{title}</span>
           <span>{progress}</span>
         </div>
 
@@ -216,13 +241,24 @@ function MelodyPlay() {
         <div className="mt-auto flex flex-col gap-3 pt-2 sm:mt-4">
           <Piano onPress={handlePress} activeNote={activeNote} disabled={!hydrated || finished} />
           {finished ? (
-            <Button
-              size="lg"
-              className="h-12 w-full text-base font-semibold"
-              onClick={() => setResultOpen(true)}
-            >
-              See results
-            </Button>
+            isPractice ? (
+              <Button
+                size="lg"
+                className="h-12 w-full text-base font-semibold"
+                onClick={handlePractice}
+              >
+                Next puzzle
+                <ArrowRight />
+              </Button>
+            ) : (
+              <Button
+                size="lg"
+                className="h-12 w-full text-base font-semibold"
+                onClick={() => setResultOpen(true)}
+              >
+                See results
+              </Button>
+            )
           ) : (
             <div className="grid grid-cols-2 gap-2">
               <Button
@@ -259,11 +295,13 @@ function MelodyPlay() {
         onOpenChange={setResultOpen}
         gameName={melodyConfig.name}
         puzzleNumber={puzzleNumber}
+        mode={mode}
         won={won}
         tries={guesses.length}
         maxTries={MAX_TRIES}
         shareText={shareText}
         stats={stats}
+        onPractice={hasPractice ? handlePractice : undefined}
       >
         <MelodyReveal
           notes={answer}
@@ -287,7 +325,7 @@ function MelodyReveal({
   return (
     <div className="space-y-2 text-center">
       <p className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">
-        {won ? "Today's melody" : "The melody was"}
+        {won ? "The melody" : "The melody was"}
       </p>
       <div className="flex items-center justify-center gap-1.5">
         {notes.map((note, index) => (

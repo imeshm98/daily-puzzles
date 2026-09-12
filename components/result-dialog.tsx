@@ -1,9 +1,11 @@
 "use client";
 
+import { ArrowRight, Infinity as InfinityIcon } from "lucide-react";
 import type { ReactNode } from "react";
 import { Countdown } from "@/components/countdown";
 import { ShareButton } from "@/components/share-button";
 import { StatsPanel } from "@/components/stats-panel";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -11,6 +13,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import type { GameMode } from "@/lib/game-config";
 import type { GameStats } from "@/lib/stats";
 
 const WIN_TITLES = ["Genius!", "Magnificent!", "Impressive!", "Splendid!", "Great!", "Phew!"];
@@ -25,33 +28,45 @@ interface ResultDialogProps {
   onOpenChange: (open: boolean) => void;
   gameName: string;
   puzzleNumber: number;
+  /** Daily results show stats and the countdown; practice results show neither. */
+  mode: GameMode;
   won: boolean;
   /** Tries used. For a loss this equals maxTries. */
   tries: number;
   maxTries: number;
   shareText: string;
   stats: GameStats;
+  /**
+   * Present when the game supports practice. In daily mode it starts practice
+   * ("Keep playing"); in practice mode it loads the next random puzzle ("Next").
+   */
+  onPractice?: () => void;
   /** Game-specific content, e.g. the revealed answer. */
   children?: ReactNode;
 }
 
 /**
- * End-of-game dialog shared by every game: result, big Share button, stats,
- * countdown to the next puzzle, and a hidden ad slot for later.
+ * End-of-game dialog shared by every game: result, big Share button, then
+ * for the daily puzzle the stats, practice button, countdown and a hidden ad
+ * slot; for practice just a "Next puzzle" button.
  */
 export function ResultDialog({
   open,
   onOpenChange,
   gameName,
   puzzleNumber,
+  mode,
   won,
   tries,
   maxTries,
   shareText,
   stats,
+  onPractice,
   children,
 }: ResultDialogProps) {
   const score = won ? `${tries}/${maxTries}` : `X/${maxTries}`;
+  const practice = mode === "practice";
+  const heading = practice ? `${gameName} Practice` : `${gameName} #${puzzleNumber}`;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -59,7 +74,7 @@ export function ResultDialog({
         <DialogHeader className="items-center text-center">
           <DialogTitle className="text-2xl">{resultTitle(won, tries)}</DialogTitle>
           <DialogDescription>
-            {gameName} #{puzzleNumber} · {score}
+            {heading} · {score}
           </DialogDescription>
         </DialogHeader>
 
@@ -67,12 +82,40 @@ export function ResultDialog({
 
         <ShareButton text={shareText} />
 
-        <StatsPanel stats={stats} maxTries={maxTries} highlightTries={won ? tries : null} />
+        {practice ? (
+          onPractice && (
+            <Button
+              variant="outline"
+              size="lg"
+              className="h-12 w-full text-base font-semibold"
+              onClick={onPractice}
+            >
+              Next puzzle
+              <ArrowRight />
+            </Button>
+          )
+        ) : (
+          <>
+            <StatsPanel stats={stats} maxTries={maxTries} highlightTries={won ? tries : null} />
 
-        <Countdown label={`Next ${gameName} in`} />
+            {onPractice && (
+              <Button
+                variant="outline"
+                size="lg"
+                className="h-12 w-full text-base font-semibold"
+                onClick={onPractice}
+              >
+                <InfinityIcon />
+                Keep playing (practice)
+              </Button>
+            )}
 
-        {/* Reserved for a future ad unit. Stays hidden until it is wired up. */}
-        <div id="ad-slot" hidden />
+            <Countdown label={`Next ${gameName} in`} size="sm" />
+
+            {/* Reserved for a future ad unit. Stays hidden until it is wired up. */}
+            <div id="ad-slot" hidden />
+          </>
+        )}
       </DialogContent>
     </Dialog>
   );

@@ -15,6 +15,21 @@ describe("buildShareText", () => {
     expect(text).toBe("Melody #1  3/6\n🟩🟨⬛⬛🟩\n⬛🟩🟩🟨🟩\n🟩🟩🟩🟩🟩\nhttps://example.com");
   });
 
+  it("labels practice puzzles instead of numbering them", () => {
+    const text = buildShareText({
+      gameName: "Melody",
+      puzzleNumber: 7,
+      practice: true,
+      won: true,
+      tries: 4,
+      maxTries: 6,
+      rows: ["🟩🟩🟩🟩🟩"],
+      url: "https://example.com",
+    });
+    expect(text).toBe("Melody Practice  4/6\n🟩🟩🟩🟩🟩\nhttps://example.com");
+    expect(text).not.toContain("#");
+  });
+
   it("uses X for a loss", () => {
     const text = buildShareText({
       gameName: "Melody",

@@ -5,8 +5,8 @@ import { melodyConfig } from "./melody/config";
  * Registry of every game on the site, in hub order.
  * To add a game: create games/<id>/config.ts and add it to this list.
  */
-export const games: readonly GameConfig<never>[] = [melodyConfig];
+export const games: readonly GameConfig[] = [melodyConfig];
 
-export function getGame(id: string): GameConfig<never> | undefined {
+export function getGame(id: string): GameConfig | undefined {
   return games.find((game) => game.id === id);
 }

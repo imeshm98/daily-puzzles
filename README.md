@@ -8,6 +8,8 @@ Games so far:
 | --- | --- |
 | 🎹 Melody | Hear five notes, then play them back on a piano in six tries. |
 
+Every game has one daily puzzle (same for everyone, with stats and streaks) plus a practice mode with unlimited random puzzles that do not count towards stats.
+
 ## Requirements
 
 - Node.js 24 LTS (or 22+) and npm.
@@ -80,8 +82,8 @@ See `CLAUDE.md` for the rules every game follows.
 ## Add a new game
 
 1. Create `games/<id>/logic.ts` with the pure rules and a daily generator that uses `createRng(`<id>:${dateKey}`)` from `lib/random.ts`. Add `logic.test.ts`.
-2. Create `games/<id>/config.ts` exporting a `GameConfig`: `id`, `name`, `emoji`, `tagline`, `path`, `maxTries`, `howToPlay`, `buildShareText`.
-3. Create `games/<id>/store.ts` (Zustand) that loads today's progress with `loadDailyState` and saves it with `saveDailyState`.
+2. Create `games/<id>/config.ts` exporting a `GameConfig`: `id`, `name`, `emoji`, `tagline`, `path`, `maxTries`, `howToPlay`, `buildShareText`. Add `generateRandomPuzzle` to get practice mode (unlimited random puzzles that never touch stats) for free.
+3. Create `games/<id>/store.ts` (Zustand) that loads today's progress with `loadDailyState`, saves it with `saveDailyState` in daily mode, and can load a practice puzzle without saving.
 4. Create the game's client component in `games/<id>/components/`, wrapped in `<GameShell>` and ending with `<ResultDialog>`.
 5. Add `app/games/<id>/page.tsx` that renders it.
 6. Register the config in `games/index.ts`. The hub lists it automatically.

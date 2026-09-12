@@ -13,7 +13,7 @@ import type { GameConfig } from "@/lib/game-config";
 import type { GameStats } from "@/lib/stats";
 
 interface StatsDialogProps {
-  game: GameConfig<never>;
+  game: GameConfig;
   stats: GameStats;
   open: boolean;
   onOpenChange: (open: boolean) => void;

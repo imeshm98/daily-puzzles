@@ -1,7 +1,14 @@
 import type { GameConfig } from "@/lib/game-config";
-import { buildMelodyShareText, MAX_TRIES, MELODY_NAME, type MelodyShareInput } from "./logic";
+import {
+  buildMelodyShareText,
+  generateRandomMelody,
+  MAX_TRIES,
+  MELODY_NAME,
+  type MelodyShareInput,
+  type Note,
+} from "./logic";
 
-export const melodyConfig: GameConfig<MelodyShareInput> = {
+export const melodyConfig: GameConfig<MelodyShareInput, Note[]> = {
   id: "melody",
   name: MELODY_NAME,
   emoji: "🎹",
@@ -25,4 +32,5 @@ export const melodyConfig: GameConfig<MelodyShareInput> = {
     ],
   },
   buildShareText: buildMelodyShareText,
+  generateRandomPuzzle: generateRandomMelody,
 };

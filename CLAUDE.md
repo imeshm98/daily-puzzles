@@ -58,12 +58,13 @@ games/                   One folder per game plus the registry.
 7. Client-only data (localStorage, the clock, audio) must not affect server-rendered HTML. Stores start empty and hydrate from an effect that calls a store action. Never call a `useState` setter synchronously inside `useEffect` (the react-hooks lint rules forbid it); prefer `useSyncExternalStore` or a Zustand action.
 8. Mobile first, dark theme, large touch targets, keyboard support on desktop.
 9. A game's `id` is its URL slug and its localStorage namespace. Never rename it after launch.
+10. Practice mode is provided by the shell. A game opts in by setting `generateRandomPuzzle` in its config (Math.random is fine there). The shell then shows the header "Practice" / "Daily" link and the "Keep playing (practice)" and "Next puzzle" buttons, and makes `record()` a no-op in practice. The game reads `mode` and `practice.puzzle` from `useGameShell<TPuzzle>()`, loads the practice puzzle into its store without persisting it, and passes `practice: true` to its share text builder so the heading reads "<Game> Practice". Stats, streaks, saved progress and the countdown are daily-only.
 
 ## Adding a new game
 
 1. Create `games/<id>/logic.ts` with pure rule functions and a `getDaily<Name>(dateKey)` generator, plus `logic.test.ts`.
-2. Create `games/<id>/config.ts` exporting a `GameConfig` (id, name, emoji, tagline, path, maxTries, howToPlay, buildShareText).
-3. Create `games/<id>/store.ts` (Zustand) with an `init()` that loads today's puzzle and saved progress, and actions that save with `saveDailyState`.
+2. Create `games/<id>/config.ts` exporting a `GameConfig` (id, name, emoji, tagline, path, maxTries, howToPlay, buildShareText, and `generateRandomPuzzle` for practice mode).
+3. Create `games/<id>/store.ts` (Zustand) with an `init()` that loads today's puzzle and saved progress, a `startPractice(puzzle)` that loads a practice puzzle without saving, and actions that save with `saveDailyState` in daily mode only.
 4. Create `games/<id>/components/<name>-game.tsx`, a client component that renders `<GameShell>` and `<ResultDialog>`.
 5. Create `app/games/<id>/page.tsx` that exports `metadata` and renders the game component.
 6. Add the config to the `games` array in `games/index.ts`. The hub picks it up automatically.

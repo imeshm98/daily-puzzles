@@ -12,7 +12,7 @@ import {
 import type { GameConfig } from "@/lib/game-config";
 
 interface HowToPlayDialogProps {
-  game: GameConfig<never>;
+  game: GameConfig;
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }

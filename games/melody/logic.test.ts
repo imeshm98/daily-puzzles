@@ -4,6 +4,7 @@ import { createRng } from "@/lib/random";
 import {
   buildMelodyShareText,
   generateMelody,
+  generateRandomMelody,
   getDailyMelody,
   isWinningMarks,
   MELODY_LENGTH,
@@ -128,7 +129,38 @@ describe("getDailyMelody", () => {
   });
 });
 
+describe("generateRandomMelody (practice)", () => {
+  it("follows the same musical rules as the daily melody", () => {
+    const indexOf = (note: Note) => NOTES.indexOf(note);
+    const seen = new Set<string>();
+    for (let i = 0; i < 300; i++) {
+      const melody = generateRandomMelody();
+      seen.add(melody.join(" "));
+      expect(melody).toHaveLength(MELODY_LENGTH);
+      expect(["C4", "E4", "G4"]).toContain(melody[0]);
+      let leaps = 0;
+      for (let j = 1; j < melody.length; j++) {
+        expect(NOTES).toContain(melody[j]);
+        if (Math.abs(indexOf(melody[j]) - indexOf(melody[j - 1])) >= 2) leaps++;
+      }
+      expect(leaps).toBeLessThanOrEqual(1);
+    }
+    expect(seen.size).toBeGreaterThan(20);
+  });
+});
+
 describe("buildMelodyShareText", () => {
+  it("uses 'Melody Practice' as the heading in practice mode", () => {
+    const text = buildMelodyShareText({
+      puzzleNumber: 12,
+      practice: true,
+      won: false,
+      marks: Array.from({ length: 6 }, () => marks("bbbbb")),
+    });
+    expect(text.split("\n")[0]).toBe("Melody Practice  X/6");
+    expect(text).not.toContain("#12");
+  });
+
   it("matches the share format exactly", () => {
     const text = buildMelodyShareText({
       puzzleNumber: 1,

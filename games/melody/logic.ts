@@ -146,12 +146,19 @@ export function getDailyMelody(dateKey: string): Note[] {
   return generateMelody(createRng(`melody:${dateKey}`));
 }
 
+/** A random melody for practice mode. Math.random is fine here: practice is not shared. */
+export function generateRandomMelody(): Note[] {
+  return generateMelody(Math.random);
+}
+
 export function marksToSquares(marks: readonly Mark[]): string {
   return marks.map((mark) => SQUARES[mark]).join("");
 }
 
 export interface MelodyShareInput {
   puzzleNumber: number;
+  /** True for a practice puzzle: the heading becomes "Melody Practice". */
+  practice?: boolean;
   won: boolean;
   /** Marks of every submitted try, in order. */
   marks: readonly (readonly Mark[])[];
@@ -161,6 +168,7 @@ export function buildMelodyShareText(input: MelodyShareInput): string {
   return buildShareText({
     gameName: MELODY_NAME,
     puzzleNumber: input.puzzleNumber,
+    practice: input.practice,
     won: input.won,
     tries: input.marks.length,
     maxTries: MAX_TRIES,
