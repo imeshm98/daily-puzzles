@@ -44,7 +44,8 @@ lib/                     Shared logic, pure and tested where possible.
   hooks/                 useHydrated, useToday, useCountdown, useReloadOnNewDay.
 games/                   One folder per game plus the registry.
   index.ts               `games` array: add new configs here, in hub order.
-  melody/                config.ts, logic.ts (+ logic.test.ts), store.ts (+ store.test.ts), audio.ts, components/.
+  melody/                config.ts, logic.ts (+ logic.test.ts), store.ts (+ store.test.ts), audio.ts (+ audio.test.ts: synth,
+                         master gain, compressor, volume setting), components/ (board, piano, sound-settings, game).
   colourmix/             Same layout: config.ts, logic.ts, store.ts, components/ (sliders, swatches, game).
   numbers/               Same layout; logic.ts holds the breadth-first solver (exploreResults, findSolution).
   distance/              Same layout plus cities.ts (the city data set used by the puzzle generator).
@@ -55,7 +56,7 @@ games/                   One folder per game plus the registry.
 
 1. One puzzle per day. Puzzle number = days since 2026-09-14, which is #1, using the player's local date. Always use `getToday()` from `lib/daily.ts`.
 2. The puzzle is generated from `createRng(`${gameId}:${dateKey}`)` in `lib/random.ts`. Never use `Math.random` for puzzle content.
-3. Wrap the page in `<GameShell game={config}>`. Use `useGameShell()` for `stats`, `record(result)` and `dialogOpen` (ignore keyboard input while it is true).
+3. Wrap the page in `<GameShell game={config}>`. Use `useGameShell()` for `stats`, `record(result)` and `dialogOpen` (ignore keyboard input while it is true). Pass `helpExtra` to render extra content at the bottom of the how-to-play dialog (Melody puts its volume slider and Test sound button there).
 4. Persist today's progress with `loadDailyState` / `saveDailyState` from `lib/daily-state.ts`, keyed by the game id. Recompute derived data from the saved input rather than trusting it.
 5. When the game ends, call `record({ puzzleNumber, won, tries })` once and show `<ResultDialog>` with the share text.
 6. Share text comes from `buildShareText` in `lib/share.ts`: emoji squares and numbers only, never the answer, ending with `SITE_URL`.

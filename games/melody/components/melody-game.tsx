@@ -5,19 +5,20 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { GameShell, useGameShell } from "@/components/game-shell";
 import { ResultDialog } from "@/components/result-dialog";
 import { Button } from "@/components/ui/button";
-import { playNote, playSequence, type SequenceHandle } from "../audio";
+import { playNote, playSequence, unlockAudio, type SequenceHandle } from "../audio";
 import { melodyConfig } from "../config";
 import { KEY_TO_NOTE, MAX_TRIES, MELODY_LENGTH, NOTE_LABELS, type Note } from "../logic";
 import { useMelodyStore } from "../store";
 import { Board, type Playback } from "./board";
 import { Piano } from "./piano";
+import { MelodySoundSettings } from "./sound-settings";
 
 const delay = (ms: number) => new Promise<void>((resolve) => window.setTimeout(resolve, ms));
 
 /** Entry point rendered by app/games/melody/page.tsx. */
 export function MelodyGame() {
   return (
-    <GameShell game={melodyConfig}>
+    <GameShell game={melodyConfig} helpExtra={<MelodySoundSettings />}>
       <MelodyPlay />
     </GameShell>
   );
@@ -63,6 +64,18 @@ function MelodyPlay() {
 
   // Stop any sound when leaving the page.
   useEffect(() => stopPlayback, [stopPlayback]);
+
+  // Create and resume the shared AudioContext on the first user gesture, so the
+  // first note (even one scheduled from a touch pointerdown) plays without delay.
+  useEffect(() => {
+    const events = ["pointerup", "touchend", "keydown"] as const;
+    const unlock = () => {
+      unlockAudio();
+      events.forEach((name) => window.removeEventListener(name, unlock));
+    };
+    events.forEach((name) => window.addEventListener(name, unlock, { passive: true }));
+    return () => events.forEach((name) => window.removeEventListener(name, unlock));
+  }, []);
 
   /** Plays a sequence; `highlight` lights up the keys and cells as it goes. */
   const play = useCallback(
