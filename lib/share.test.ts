@@ -44,6 +44,20 @@ describe("buildShareText", () => {
     expect(text).toBe("Colour Mix #3  96%  2/3\n▲▼✓\n✓✓✓\nhttps://example.com");
   });
 
+  it("lets a game replace the tries score with its own label", () => {
+    const text = buildShareText({
+      gameName: "Numbers",
+      puzzleNumber: 5,
+      won: true,
+      tries: 3,
+      maxTries: 4,
+      scoreLabel: "✓ 3 steps (par 3)",
+      rows: ["✖️➕➖"],
+      url: "https://example.com",
+    });
+    expect(text).toBe("Numbers #5  ✓ 3 steps (par 3)\n✖️➕➖\nhttps://example.com");
+  });
+
   it("uses X for a loss", () => {
     const text = buildShareText({
       gameName: "Melody",

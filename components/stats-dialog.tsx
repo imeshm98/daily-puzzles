@@ -27,7 +27,11 @@ export function StatsDialog({ game, stats, open, onOpenChange }: StatsDialogProp
           <DialogTitle>Statistics</DialogTitle>
           <DialogDescription>{game.name}</DialogDescription>
         </DialogHeader>
-        <StatsPanel stats={stats} maxTries={game.maxTries} />
+        <StatsPanel
+          stats={stats}
+          maxTries={game.maxTries}
+          distributionLabel={game.distributionLabel}
+        />
         <Countdown label={`Next ${game.name} in`} />
       </DialogContent>
     </Dialog>

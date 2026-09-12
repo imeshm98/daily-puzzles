@@ -6,10 +6,16 @@ interface StatsPanelProps {
   maxTries: number;
   /** Highlights the distribution bar for today's winning try count. */
   highlightTries?: number | null;
+  distributionLabel?: string;
 }
 
 /** Played / win % / streaks tiles plus the guess distribution bars. */
-export function StatsPanel({ stats, maxTries, highlightTries = null }: StatsPanelProps) {
+export function StatsPanel({
+  stats,
+  maxTries,
+  highlightTries = null,
+  distributionLabel = "Guess distribution",
+}: StatsPanelProps) {
   const tiles: [string, number][] = [
     ["Played", stats.played],
     ["Win %", winPercent(stats)],
@@ -31,7 +37,7 @@ export function StatsPanel({ stats, maxTries, highlightTries = null }: StatsPane
 
       <div>
         <h3 className="mb-2 text-xs font-semibold tracking-wide text-muted-foreground uppercase">
-          Guess distribution
+          {distributionLabel}
         </h3>
         <ol className="space-y-1">
           {Array.from({ length: maxTries }, (_, index) => {

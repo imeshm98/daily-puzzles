@@ -28,7 +28,10 @@ export interface GameConfig<TShare = never, TPuzzle = unknown> {
   tagline: string;
   /** Route of the game page, e.g. "/games/melody". */
   path: string;
+  /** Size of the stats distribution (tries, or steps for games without tries). */
   maxTries: number;
+  /** Heading of the stats distribution. Defaults to "Guess distribution". */
+  distributionLabel?: string;
   howToPlay: HowToPlayContent;
   /** Builds the spoiler-free share text (emoji squares + numbers + site URL). */
   buildShareText: (input: TShare) => string;

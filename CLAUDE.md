@@ -46,6 +46,7 @@ games/                   One folder per game plus the registry.
   index.ts               `games` array: add new configs here, in hub order.
   melody/                config.ts, logic.ts (+ logic.test.ts), store.ts (+ store.test.ts), audio.ts, components/.
   colourmix/             Same layout: config.ts, logic.ts, store.ts, components/ (sliders, swatches, game).
+  numbers/               Same layout; logic.ts holds the breadth-first solver (exploreResults, findSolution).
 ```
 
 ## Rules every game follows
@@ -59,7 +60,8 @@ games/                   One folder per game plus the registry.
 7. Client-only data (localStorage, the clock, audio) must not affect server-rendered HTML. Stores start empty and hydrate from an effect that calls a store action. Never call a `useState` setter synchronously inside `useEffect` (the react-hooks lint rules forbid it); prefer `useSyncExternalStore` or a Zustand action.
 8. Mobile first, dark theme, large touch targets, keyboard support on desktop.
 9. A game's `id` is its URL slug and its localStorage namespace. Never rename it after launch.
-10. Practice mode is provided by the shell. A game opts in by setting `generateRandomPuzzle` in its config (Math.random is fine there). The shell then shows the header "Practice" / "Daily" link and the "Keep playing (practice)" and "Next puzzle" buttons, and makes `record()` a no-op in practice. The game reads `mode` and `practice.puzzle` from `useGameShell<TPuzzle>()`, loads the practice puzzle into its store without persisting it, and passes `practice: true` to its share text builder so the heading reads "<Game> Practice". Stats, streaks, saved progress and the countdown are daily-only.
+10. Games without "tries" still set `maxTries` (it sizes the stats distribution, e.g. steps used) and can set `distributionLabel`. `ResultDialog` accepts `title` and `scoreLabel` overrides, and `buildShareText` accepts `detail` (extra text) or `scoreLabel` (replaces "n/max") for headings like "Colour Mix #3  96%  2/3" or "Numbers #5  ✓ 3 steps (par 3)".
+11. Practice mode is provided by the shell. A game opts in by setting `generateRandomPuzzle` in its config (Math.random is fine there). The shell then shows the header "Practice" / "Daily" link and the "Keep playing (practice)" and "Next puzzle" buttons, and makes `record()` a no-op in practice. The game reads `mode` and `practice.puzzle` from `useGameShell<TPuzzle>()`, loads the practice puzzle into its store without persisting it, and passes `practice: true` to its share text builder so the heading reads "<Game> Practice". Stats, streaks, saved progress and the countdown are daily-only.
 
 ## Adding a new game
 

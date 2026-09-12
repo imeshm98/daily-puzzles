@@ -18,6 +18,8 @@ export interface ShareTextInput {
   maxTries: number;
   /** Optional extra between the heading and the tries, e.g. "96%" → "Colour Mix #3  96%  2/3". */
   detail?: string;
+  /** Replaces the "tries/maxTries" part entirely, e.g. "✓ 3 steps (par 3)" or "✗". */
+  scoreLabel?: string;
   /** One line per try. Emoji squares only: never include the answer. */
   rows: readonly string[];
   /** Defaults to SITE_URL. */
@@ -33,7 +35,8 @@ export interface ShareTextInput {
  *   https://example.com
  */
 export function buildShareText(input: ShareTextInput): string {
-  const score = input.won ? `${input.tries}/${input.maxTries}` : `X/${input.maxTries}`;
+  const score =
+    input.scoreLabel ?? (input.won ? `${input.tries}/${input.maxTries}` : `X/${input.maxTries}`);
   const heading = input.practice
     ? `${input.gameName} Practice`
     : `${input.gameName} #${input.puzzleNumber}`;

@@ -36,6 +36,12 @@ interface ResultDialogProps {
   maxTries: number;
   shareText: string;
   stats: GameStats;
+  /** Overrides the default Wordle-style title. */
+  title?: string;
+  /** Overrides the "tries/maxTries" score in the subtitle, e.g. "3 steps (par 3)". */
+  scoreLabel?: string;
+  /** Heading of the stats distribution (see GameConfig.distributionLabel). */
+  distributionLabel?: string;
   /**
    * Present when the game supports practice. In daily mode it starts practice
    * ("Keep playing"); in practice mode it loads the next random puzzle ("Next").
@@ -61,10 +67,13 @@ export function ResultDialog({
   maxTries,
   shareText,
   stats,
+  title,
+  scoreLabel,
+  distributionLabel,
   onPractice,
   children,
 }: ResultDialogProps) {
-  const score = won ? `${tries}/${maxTries}` : `X/${maxTries}`;
+  const score = scoreLabel ?? (won ? `${tries}/${maxTries}` : `X/${maxTries}`);
   const practice = mode === "practice";
   const heading = practice ? `${gameName} Practice` : `${gameName} #${puzzleNumber}`;
 
@@ -72,7 +81,7 @@ export function ResultDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-h-[calc(100dvh-2rem)] overflow-y-auto">
         <DialogHeader className="items-center text-center">
-          <DialogTitle className="text-2xl">{resultTitle(won, tries)}</DialogTitle>
+          <DialogTitle className="text-2xl">{title ?? resultTitle(won, tries)}</DialogTitle>
           <DialogDescription>
             {heading} · {score}
           </DialogDescription>
@@ -96,7 +105,12 @@ export function ResultDialog({
           )
         ) : (
           <>
-            <StatsPanel stats={stats} maxTries={maxTries} highlightTries={won ? tries : null} />
+            <StatsPanel
+              stats={stats}
+              maxTries={maxTries}
+              highlightTries={won ? tries : null}
+              distributionLabel={distributionLabel}
+            />
 
             {onPractice && (
               <Button
