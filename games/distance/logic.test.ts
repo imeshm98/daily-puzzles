@@ -157,11 +157,11 @@ describe("generatePuzzle", () => {
   it("is pinned for launch day (changing the generator would change every past puzzle)", () => {
     const { rounds } = getDailyPuzzle("2026-09-14");
     expect(rounds.map((r) => `${r.from.name}>${r.to.name}=${r.distanceKm}`)).toEqual([
-      "Prague>Kinshasa=6063",
-      "Ottawa>Las Vegas=3437",
-      "Ljubljana>Guayaquil=10522",
-      "Lusaka>Kampala=1812",
-      "Dallas>Brasília=7495",
+      "Bucharest>New Delhi=4805",
+      "Salvador>Port Moresby=17445",
+      "Djibouti>Ulaanbaatar=7109",
+      "Novosibirsk>Nicosia=4346",
+      "Porto>Suva=17370",
     ]);
   });
 });

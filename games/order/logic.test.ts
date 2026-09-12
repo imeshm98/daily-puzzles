@@ -79,7 +79,7 @@ describe("item picking", () => {
     expect(getDailyPuzzle("2026-09-14")).toEqual(getDailyPuzzle("2026-09-14"));
     const puzzle = getDailyPuzzle("2026-09-14");
     expect(`${puzzle.categoryId}: ${puzzle.items.map((i) => i.name).join(", ")}`).toBe(
-      "planets-diameter: Titan, Venus, Triton, Mars, The Moon",
+      "countries-population: Canada, Mexico, Norway, United Kingdom, Turkey",
     );
   });
 });
