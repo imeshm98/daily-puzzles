@@ -63,6 +63,8 @@ export function useGameShell<TPuzzle = unknown>(): GameShellContextValue<TPuzzle
 interface GameShellProps {
   game: GameConfig;
   children: ReactNode;
+  /** Optional content rendered at the bottom of the how-to-play dialog (e.g. sound settings). */
+  helpExtra?: ReactNode;
 }
 
 /**
@@ -70,7 +72,7 @@ interface GameShellProps {
  * the how-to-play dialog (opens automatically on the first visit), the stats
  * dialog, stats persistence, practice mode and a reload at local midnight.
  */
-export function GameShell({ game, children }: GameShellProps) {
+export function GameShell({ game, children, helpExtra }: GameShellProps) {
   const hydrated = useHydrated();
   const stats = useGameStats(game.id, game.maxTries);
   const hydrateStats = useStatsStore((state) => state.hydrate);
@@ -210,6 +212,7 @@ export function GameShell({ game, children }: GameShellProps) {
 
       <HowToPlayDialog
         game={game}
+        extra={helpExtra}
         open={helpOpen}
         onOpenChange={(open) => (open ? setHelpForced(true) : closeHelp())}
       />

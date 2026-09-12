@@ -10,16 +10,19 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import type { GameConfig } from "@/lib/game-config";
+import type { ReactNode } from "react";
 
 interface HowToPlayDialogProps {
   game: GameConfig;
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  /** Extra content from the game page (e.g. sound settings), rendered below the rules. */
+  extra?: ReactNode;
 }
 
 /** Renders a game's howToPlay config. Opens automatically on the first visit. */
-export function HowToPlayDialog({ game, open, onOpenChange }: HowToPlayDialogProps) {
-  const { intro, rules, legend, extra } = game.howToPlay;
+export function HowToPlayDialog({ game, open, onOpenChange, extra }: HowToPlayDialogProps) {
+  const { intro, rules, legend, extra: configExtra } = game.howToPlay;
   const [lead, ...more] = intro;
 
   return (
@@ -53,6 +56,7 @@ export function HowToPlayDialog({ game, open, onOpenChange }: HowToPlayDialogPro
           </ul>
         )}
 
+        {configExtra}
         {extra}
 
         <DialogFooter>
