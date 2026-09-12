@@ -47,6 +47,7 @@ games/                   One folder per game plus the registry.
   melody/                config.ts, logic.ts (+ logic.test.ts), store.ts (+ store.test.ts), audio.ts, components/.
   colourmix/             Same layout: config.ts, logic.ts, store.ts, components/ (sliders, swatches, game).
   numbers/               Same layout; logic.ts holds the breadth-first solver (exploreResults, findSolution).
+  distance/              Same layout plus cities.ts (the city data set used by the puzzle generator).
 ```
 
 ## Rules every game follows

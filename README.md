@@ -9,6 +9,7 @@ Games so far:
 | 🎹 Melody | Hear five notes, then play them back on a piano in six tries. |
 | 🎨 Colour Mix | Mix red, green and blue with sliders to match a target colour in three tries. |
 | 🔢 Numbers | Combine five number tiles with + − × ÷ to hit the target in as few steps as possible. |
+| 🌍 Distance | Guess the distance between two world cities, five rounds, up to 500 points. |
 
 Every game has one daily puzzle (same for everyone, with stats and streaks) plus a practice mode with unlimited random puzzles that do not count towards stats.
 
