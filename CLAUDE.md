@@ -11,11 +11,12 @@ A static website of small daily puzzle games, Wordle-style. One puzzle per game 
 - Zustand for game state. Vitest for unit tests of game rules (`*.test.ts` next to the code).
 - localStorage for stats, streaks and today's progress. Client components only.
 - Web Audio API for every sound. No audio files.
+- zod for the JSON content files under `content/` (schemas in `lib/content/schemas.ts`, shared by the games and the admin).
 
 ## Commands
 
 ```
-npm run dev     # http://localhost:3000
+npm run dev     # http://localhost:3000 (also serves the development-only admin at /admin)
 npm run build   # static export into out/
 npm test        # vitest run
 npm run lint    # eslint
@@ -26,6 +27,9 @@ npm run lint    # eslint
 ```
 app/                     Routes only. page.tsx is the hub, games/<id>/page.tsx is a game page.
   layout.tsx             Root layout: dark theme, fonts, metadata, analytics placeholder comment.
+  admin/                 Development-only content admin: *.dev.tsx pages (dashboard + puzzle preview, order, distance)
+                         and _components/. api/admin/content/route.dev.ts is its read/write API. See "Admin" below.
+content/                 JSON data edited by the admin: order-categories.json, cities.json. Sorted, one entry per line.
 components/              Shared UI used by every game.
   game-shell.tsx         Header (back, help, stats), first-visit help, stats dialog, midnight reload.
   result-dialog.tsx      End screen: result, Share, stats, countdown, hidden #ad-slot.
@@ -41,6 +45,8 @@ lib/                     Shared logic, pure and tested where possible.
   share.ts               buildShareText, shareResult (native share on mobile, clipboard elsewhere), SQUARES.
   storage.ts             Safe localStorage JSON helpers and namespaced keys.
   game-config.ts         The GameConfig type every game registers.
+  content/               schemas.ts (zod, shared), validate.ts (+ test: rules the admin enforces), format.ts (stable
+                         sort + JSON layout), files.ts (the only files the admin API may touch).
   hooks/                 useHydrated, useToday, useCountdown, useReloadOnNewDay.
 games/                   One folder per game plus the registry.
   index.ts               `games` array: add new configs here, in hub order.
@@ -48,8 +54,9 @@ games/                   One folder per game plus the registry.
                          master gain, compressor, volume setting), components/ (board, piano, sound-settings, game).
   colourmix/             Same layout: config.ts, logic.ts, store.ts, components/ (sliders, swatches, game).
   numbers/               Same layout; logic.ts holds the breadth-first solver (exploreResults, findSolution).
-  distance/              Same layout plus cities.ts (the city data set used by the puzzle generator).
-  order/                 Same layout plus categories.ts; components use @dnd-kit/sortable with arrow-button fallbacks.
+  distance/              Same layout plus cities.ts (typed loader for content/cities.json).
+  order/                 Same layout plus categories.ts (typed loader for content/order-categories.json); components use
+                         @dnd-kit/sortable with arrow-button fallbacks.
 ```
 
 ## Rules every game follows
@@ -65,6 +72,15 @@ games/                   One folder per game plus the registry.
 9. A game's `id` is its URL slug and its localStorage namespace. Never rename it after launch.
 10. Games without "tries" still set `maxTries` (it sizes the stats distribution, e.g. steps used) and can set `distributionLabel`. `ResultDialog` accepts `title` and `scoreLabel` overrides, and `buildShareText` accepts `detail` (extra text) or `scoreLabel` (replaces "n/max") for headings like "Colour Mix #3  96%  2/3" or "Numbers #5  ✓ 3 steps (par 3)".
 11. Practice mode is provided by the shell. A game opts in by setting `generateRandomPuzzle` in its config (Math.random is fine there). The shell then shows the header "Practice" / "Daily" link and the "Keep playing (practice)" and "Next puzzle" buttons, and makes `record()` a no-op in practice. The game reads `mode` and `practice.puzzle` from `useGameShell<TPuzzle>()`, loads the practice puzzle into its store without persisting it, and passes `practice: true` to its share text builder so the heading reads "<Game> Practice". Stats, streaks, saved progress and the countdown are daily-only.
+
+## Admin (development only)
+
+`/admin` edits the JSON content under `content/` and previews the daily puzzle of every game for any date. It has no login: it exists only under `npm run dev` on the developer's machine.
+
+- Its files are named `page.dev.tsx`, `layout.dev.tsx` and `route.dev.ts`. `next.config.ts` registers the `dev.tsx` / `dev.ts` page extensions only when `process.env.NODE_ENV === "development"`, so `next build` never sees them and `out/` contains no admin page and no API route. The route handler also answers 404 unless NODE_ENV is development. Never rename these files to plain `page.tsx`.
+- The API (`GET/PUT /api/admin/content`) only reads and writes the files listed in `lib/content/files.ts`, looked up by key. It never builds a path from the request.
+- Every save is validated with `lib/content/validate.ts` (schema, at least 15 items per category, numeric values, no duplicate names, no near-equal values, enough clearly different values, city coordinates in range, no duplicate cities), then sorted and formatted by `lib/content/format.ts` so diffs stay small. `content.test.ts` checks the shipped files pass the same rules and are stored in that exact format.
+- After saving, commit the JSON and open a pull request. Changing content changes the puzzles generated for every date, so the pinned launch-day tests may need updating.
 
 ## Adding a new game
 

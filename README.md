@@ -76,13 +76,24 @@ Any other static host works too: upload the contents of `out/`.
 - **Cloudflare Pages** is connected to the GitHub repository and builds and deploys the site from the `main` branch automatically on every push (see the Cloudflare Pages steps above for the build settings).
 - **GitHub Actions** runs checks only. The workflow in `.github/workflows/ci.yml` runs on every push to every branch and on every pull request: it uses the Node version in `.nvmrc` with npm caching, then runs `npm ci`, `npm run lint`, `npm test` and `npm run build`. It does not deploy anything.
 
+## Content admin (development only)
+
+Run `npm run dev` and open http://localhost:3000/admin. There is no login: the admin exists only on your machine under the dev server and is never part of the production build. Its files are named `page.dev.tsx` / `route.dev.ts`, and `next.config.ts` only registers that file extension when `NODE_ENV` is `development`, so `npm run build` produces no admin page and no API route in `out/`.
+
+- **/admin** lists what can be edited and has a **Preview daily puzzle** panel: pick a date and see exactly what all five games generate that day.
+- **/admin/order** edits the Order categories (question, unit, labels, minimum gap) and their items (name, value). Items are shown sorted by value so a wrong value stands out.
+- **/admin/distance** is a searchable table of the Distance cities (name, country, flag, latitude, longitude).
+
+Saving validates the data first (at least 15 items per category, numeric values, no duplicate names, no near-equal values, coordinates in range, no duplicate cities) and then writes the JSON file under `content/`, sorted and formatted the same way every time so git diffs stay small. After saving, commit the change and open a pull request. The games read the same files through the zod schemas in `lib/content/schemas.ts`.
+
 ## Project structure
 
 ```
 app/            Routes. page.tsx is the hub, games/<id>/page.tsx is a game page.
 components/     Shared UI: game shell, result / stats / how-to-play dialogs, share button, countdown.
 components/ui/  shadcn/ui components.
-lib/            Shared logic: daily puzzle number, seeded random, stats and streaks, share text, storage.
+lib/            Shared logic: daily puzzle number, seeded random, stats and streaks, share text, storage, content schemas and validation.
+content/        JSON data for the Order categories and the Distance cities (edit with the admin).
 games/          One folder per game (config, rules, tests, state, components) and the registry in index.ts.
 ```
 
