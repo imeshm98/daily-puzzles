@@ -7,10 +7,29 @@ export const SQUARES = {
   absent: "⬛",
 } as const;
 
+/** Query parameter added to every shared link so analytics can count share visits. */
+export const SHARE_SOURCE_PARAM = "s";
+export const SHARE_SOURCE_VALUE = "share";
+
+/** Hooks must fit on one line in a chat preview. */
+export const MAX_HOOK_LENGTH = 40;
+
+/**
+ * The link a share points at: the game's own page (never the hub) with the
+ * share source parameter, e.g. https://example.com/games/melody/?s=share.
+ * The trailing slash matches `trailingSlash: true` in next.config.ts, so the
+ * static host serves the page directly without a redirect.
+ */
+export function buildShareUrl(path: string): string {
+  const base = SITE_URL.replace(/\/+$/, "");
+  const slug = path.replace(/^\/+|\/+$/g, "");
+  return `${base}/${slug ? `${slug}/` : ""}?${SHARE_SOURCE_PARAM}=${SHARE_SOURCE_VALUE}`;
+}
+
 export interface ShareTextInput {
   gameName: string;
   puzzleNumber: number;
-  /** Practice puzzles show "<Game> Practice" instead of the puzzle number. */
+  /** Practice puzzles use a plainer format: "<Game> Practice", no number, no hook. */
   practice?: boolean;
   won: boolean;
   /** Tries used (1-based). Ignored for a loss, which shows "X". */
@@ -22,17 +41,31 @@ export interface ShareTextInput {
   scoreLabel?: string;
   /** One line per try. Emoji squares only: never include the answer. */
   rows: readonly string[];
-  /** Defaults to SITE_URL. */
+  /**
+   * The challenge line shown after the grid on daily results, from the game's
+   * `buildHook`. Trimmed to a single line; ignored for practice.
+   */
+  hook?: string;
+  /** Route of the game page, e.g. "/games/melody". Builds the link with buildShareUrl. */
+  path: string;
+  /** Overrides the link entirely (tests). */
   url?: string;
 }
 
 /**
- * Builds the text every game shares:
+ * Builds the text every game shares. Daily:
  *
  *   Melody #1  3/6
  *   🟩🟨⬛⬛🟩
  *   🟩🟩🟩🟩🟩
- *   https://example.com
+ *   Can you beat 3 tries?
+ *   https://example.com/games/melody/?s=share
+ *
+ * Practice keeps a plainer format: "Melody Practice  3/6", the rows, the link.
+ *
+ * Lines are joined with "\n" only (no "\r"), which WhatsApp, Telegram,
+ * Discord and X all keep as line breaks, both from the clipboard and from the
+ * native share sheet.
  */
 export function buildShareText(input: ShareTextInput): string {
   const score =
@@ -40,11 +73,20 @@ export function buildShareText(input: ShareTextInput): string {
   const heading = input.practice
     ? `${input.gameName} Practice`
     : `${input.gameName} #${input.puzzleNumber}`;
+  const hook = input.practice ? "" : (input.hook ?? "").replace(/\s+/g, " ").trim();
   return [
     [heading, input.detail, score].filter(Boolean).join("  "),
     ...input.rows,
-    input.url ?? SITE_URL,
-  ].join("\n");
+    hook,
+    input.url ?? buildShareUrl(input.path),
+  ]
+    .filter((line) => line.length > 0)
+    .join("\n");
+}
+
+/** Opens WhatsApp (app or web) with the text ready to send. */
+export function buildWhatsAppUrl(text: string): string {
+  return `https://wa.me/?text=${encodeURIComponent(text)}`;
 }
 
 export function isMobileDevice(): boolean {

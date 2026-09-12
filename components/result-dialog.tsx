@@ -3,7 +3,7 @@
 import { ArrowRight, Infinity as InfinityIcon } from "lucide-react";
 import type { ReactNode } from "react";
 import { Countdown } from "@/components/countdown";
-import { ShareButton } from "@/components/share-button";
+import { ShareButton, WhatsAppButton } from "@/components/share-button";
 import { StatsPanel } from "@/components/stats-panel";
 import { Button } from "@/components/ui/button";
 import {
@@ -89,7 +89,11 @@ export function ResultDialog({
 
         {children}
 
-        <ShareButton text={shareText} />
+        {/* Stacked: "Challenge on WhatsApp" is too long for half of a phone-width dialog. */}
+        <div className="grid gap-2">
+          <ShareButton text={shareText} />
+          <WhatsAppButton text={shareText} />
+        </div>
 
         {practice ? (
           onPractice && (

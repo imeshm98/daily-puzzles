@@ -9,6 +9,7 @@ import { CATEGORIES, type OrderCategory, type OrderItem } from "./categories";
 export type { OrderCategory, OrderItem } from "./categories";
 
 export const ORDER_NAME = "Order";
+export const ORDER_PATH = "/games/order";
 export const ITEM_COUNT = 5;
 export const MAX_TRIES = 3;
 /** Two items are far enough apart when their ratio is at least this, or their gap is at least the category's minGap. */
@@ -199,8 +200,17 @@ export interface OrderShareInput {
  *   Order #6  2/3
  *   🟩⬛⬛🟩⬛
  *   🟩🟩🟩🟩🟩
- *   https://example.com
+ *   2/3 today. Think you know better?
+ *   https://example.com/games/order/?s=share
  */
+/** Share hook (daily only): a challenge for the friend, under 40 characters, varied by result. */
+export function orderHook(input: Pick<OrderShareInput, "won" | "marks">): string {
+  if (!input.won) return "It stumped me. Your turn to try.";
+  const tries = input.marks.length;
+  if (tries === 1) return "First try. Bet you can't match that.";
+  return `${tries}/${MAX_TRIES} today. Think you know better?`;
+}
+
 export function buildOrderShareText(input: OrderShareInput): string {
   return buildShareText({
     gameName: ORDER_NAME,
@@ -210,5 +220,7 @@ export function buildOrderShareText(input: OrderShareInput): string {
     tries: input.marks.length,
     maxTries: MAX_TRIES,
     rows: input.marks.map(marksToSquares),
+    hook: orderHook(input),
+    path: ORDER_PATH,
   });
 }

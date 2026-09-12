@@ -6,6 +6,7 @@ import { createRng, pickOne, randomInt, shuffle, type Rng } from "@/lib/random";
 import { buildShareText } from "@/lib/share";
 
 export const NUMBERS_NAME = "Numbers";
+export const NUMBERS_PATH = "/games/numbers";
 export const TILE_COUNT = 5;
 export const SMALL_MIN = 1;
 export const SMALL_MAX = 10;
@@ -271,10 +272,19 @@ export interface NumbersShareInput {
 /**
  *   Numbers #5  ✓ 3 steps (par 3)
  *   ✖️➕➖
- *   https://example.com
+ *   Solved in 3 steps. Your turn.
+ *   https://example.com/games/numbers/?s=share
  *
  * A loss reads "Numbers #5  ✗" with one ⬛ per par step instead of the operators.
  */
+/** Share hook (daily only): a challenge for the friend, under 40 characters, varied by result. */
+export function numbersHook(input: Pick<NumbersShareInput, "won" | "steps" | "par">): string {
+  if (!input.won) return "This one beat me. Can you crack it?";
+  const count = input.steps.length;
+  if (count <= input.par) return `Solved in ${count} ${count === 1 ? "step" : "steps"}. Your turn.`;
+  return `${count} steps, par ${input.par}. Beat me?`;
+}
+
 export function buildNumbersShareText(input: NumbersShareInput): string {
   const count = input.steps.length;
   const scoreLabel = input.won ? `✓ ${count} ${count === 1 ? "step" : "steps"} (par ${input.par})` : "✗";
@@ -290,5 +300,7 @@ export function buildNumbersShareText(input: NumbersShareInput): string {
     maxTries: MAX_STEPS,
     scoreLabel,
     rows: [row],
+    hook: numbersHook(input),
+    path: NUMBERS_PATH,
   });
 }

@@ -33,8 +33,17 @@ export interface GameConfig<TShare = never, TPuzzle = unknown> {
   /** Heading of the stats distribution. Defaults to "Guess distribution". */
   distributionLabel?: string;
   howToPlay: HowToPlayContent;
-  /** Builds the spoiler-free share text (emoji squares + numbers + site URL). */
+  /**
+   * Builds the spoiler-free share text: heading, emoji rows, the hook line
+   * from buildHook, then the game link. See buildShareText in lib/share.ts.
+   */
   buildShareText: (input: TShare) => string;
+  /**
+   * One short line (under 40 characters) that invites the friend reading the
+   * share to play: a challenge written for them, not a statement about the
+   * player, and varied by result so it never feels robotic. Daily only.
+   */
+  buildHook: (input: TShare) => string;
   /**
    * Optional. Returns a fresh random puzzle for practice mode (Math.random is
    * fine here, unlike the daily puzzle). When present, the game shell adds the

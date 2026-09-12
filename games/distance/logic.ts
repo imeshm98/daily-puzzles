@@ -9,6 +9,7 @@ import { CITIES, type City } from "./cities";
 export type { City } from "./cities";
 
 export const DISTANCE_NAME = "Distance";
+export const DISTANCE_PATH = "/games/distance";
 export const ROUNDS = 5;
 export const POINTS_PER_ROUND = 100;
 export const MAX_SCORE = ROUNDS * POINTS_PER_ROUND;
@@ -159,8 +160,17 @@ export interface DistanceShareInput {
 /**
  *   Distance #4  412/500
  *   🟩🟩🟨🟩🟥
- *   https://example.com
+ *   412/500. How good is your geography?
+ *   https://example.com/games/distance/?s=share
  */
+/** Share hook (daily only): a challenge for the friend, under 40 characters, varied by result. */
+export function distanceHook(input: Pick<DistanceShareInput, "results">): string {
+  const total = totalPoints(input.results);
+  if (total >= 450) return `${total}/${MAX_SCORE}. Think you can top that?`;
+  if (isWinningScore(total)) return `${total}/${MAX_SCORE}. How good is your geography?`;
+  return `Only ${total}/${MAX_SCORE}. Know your world better?`;
+}
+
 export function buildDistanceShareText(input: DistanceShareInput): string {
   const total = totalPoints(input.results);
   return buildShareText({
@@ -172,6 +182,8 @@ export function buildDistanceShareText(input: DistanceShareInput): string {
     maxTries: ROUNDS,
     scoreLabel: `${total}/${MAX_SCORE}`,
     rows: [input.results.map((result) => squareForError(result.errorPercent)).join("")],
+    hook: distanceHook(input),
+    path: DISTANCE_PATH,
   });
 }
 

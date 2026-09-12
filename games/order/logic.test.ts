@@ -156,7 +156,9 @@ describe("formatting and share text", () => {
       won: true,
       marks: [marks("gbbgb"), marks("ggggg")],
     });
-    expect(text).toBe(`Order #6  2/3\n🟩⬛⬛🟩⬛\n🟩🟩🟩🟩🟩\n${SITE_URL}`);
+    expect(text).toBe(
+      `Order #6  2/3\n🟩⬛⬛🟩⬛\n🟩🟩🟩🟩🟩\n2/3 today. Think you know better?\n${SITE_URL}/games/order/?s=share`,
+    );
   });
 
   it("shows X on a loss and the practice heading in practice", () => {

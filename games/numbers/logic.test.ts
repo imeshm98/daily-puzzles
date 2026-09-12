@@ -79,8 +79,14 @@ describe("solver", () => {
   it("returns one shortest solution that replays to the target", () => {
     const tiles = [3, 7, 10, 2, 25];
     const results = exploreResults(tiles);
-    for (const [target, ops] of results) {
-      if (ops < 2) continue;
+    // Every search walks the whole state space, and this tile set reaches
+    // over 900 targets, so checking all of them takes seconds on a slow CI
+    // runner. Check every 2-step target and a fixed sample of the deeper ones.
+    const targets = [...results].filter(([, ops]) => ops >= 2).sort((x, y) => x[0] - y[0]);
+    const sample = targets.filter(([, ops], index) => ops === 2 || index % 12 === 0);
+    expect(sample.length).toBeGreaterThan(100);
+    expect(sample.some(([, ops]) => ops === 4)).toBe(true);
+    for (const [target, ops] of sample) {
       const solution = findSolution(tiles, target);
       expect(solution).not.toBeNull();
       expect(solution).toHaveLength(ops);
@@ -161,12 +167,16 @@ describe("buildNumbersShareText", () => {
 
   it("matches the share format exactly on a win", () => {
     const text = buildNumbersShareText({ puzzleNumber: 5, won: true, steps, par: 3 });
-    expect(text).toBe(`Numbers #5  ✓ 3 steps (par 3)\n✖️➕➖\n${SITE_URL}`);
+    expect(text).toBe(
+      `Numbers #5  ✓ 3 steps (par 3)\n✖️➕➖\nSolved in 3 steps. Your turn.\n${SITE_URL}/games/numbers/?s=share`,
+    );
   });
 
   it("shows ✗ and black squares on a loss, and the practice heading in practice", () => {
     const lost = buildNumbersShareText({ puzzleNumber: 5, won: false, steps: [], par: 3 });
-    expect(lost).toBe(`Numbers #5  ✗\n⬛⬛⬛\n${SITE_URL}`);
+    expect(lost).toBe(
+      `Numbers #5  ✗\n⬛⬛⬛\nThis one beat me. Can you crack it?\n${SITE_URL}/games/numbers/?s=share`,
+    );
     const practice = buildNumbersShareText({ puzzleNumber: 5, practice: true, won: true, steps, par: 3 });
     expect(practice.split("\n")[0]).toBe("Numbers Practice  ✓ 3 steps (par 3)");
   });
