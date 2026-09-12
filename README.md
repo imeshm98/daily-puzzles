@@ -10,6 +10,7 @@ Games so far:
 | 🎨 Colour Mix | Mix red, green and blue with sliders to match a target colour in three tries. |
 | 🔢 Numbers | Combine five number tiles with + − × ÷ to hit the target in as few steps as possible. |
 | 🌍 Distance | Guess the distance between two world cities, five rounds, up to 500 points. |
+| 📊 Order | Drag five things into order (animals by weight, rivers by length, ...) in three tries. |
 
 Every game has one daily puzzle (same for everyone, with stats and streaks) plus a practice mode with unlimited random puzzles that do not count towards stats.
 

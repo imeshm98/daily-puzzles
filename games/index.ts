@@ -3,6 +3,7 @@ import { colourMixConfig } from "./colourmix/config";
 import { distanceConfig } from "./distance/config";
 import { melodyConfig } from "./melody/config";
 import { numbersConfig } from "./numbers/config";
+import { orderConfig } from "./order/config";
 
 /**
  * Registry of every game on the site, in hub order.
@@ -13,6 +14,7 @@ export const games: readonly GameConfig[] = [
   colourMixConfig,
   numbersConfig,
   distanceConfig,
+  orderConfig,
 ];
 
 export function getGame(id: string): GameConfig | undefined {
